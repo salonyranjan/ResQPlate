@@ -1,15 +1,18 @@
-import { BrowserRouter, Link, Router, Routes } from "react-router-dom";
-import Logo from "./components/Logo";
+import { BrowserRouter, Link, Route, Routes } from "react-router-dom";
 import Landing from "./components/Landing.jsx";
 import Navbar from "./components/NavBar.jsx";
+import Login from "./components/Login.jsx";
+import Signup from "./components/Signup.jsx";
 
 function App() {
   return (
     <BrowserRouter>
       <Navbar />
-      {/* <Routes> */}
-      <Landing />
-      {/* </Routes> */}
+      <Routes>
+        <Route path="/" element={<Landing />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Signup />} />
+      </Routes>
     </BrowserRouter>
   );
 }
