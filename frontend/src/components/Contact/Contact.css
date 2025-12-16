@@ -1,157 +1,223 @@
-/* Contact.css */
-:root {
-  --primary-color: #2e7d32; /* Forest Green for sustainability vibe */
-  --secondary-color: #1b5e20;
-  --bg-color: #f4f9f4;
-  --text-dark: #333;
-  --text-light: #666;
-  --white: #ffffff;
-}
-
+/* --- Global Container --- */
 .contact-container {
-  padding: 4rem 2rem;
-  background-color: var(--bg-color);
   min-height: 100vh;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-}
-
-.contact-header {
-  text-align: center;
-  margin-bottom: 3rem;
-}
-
-.contact-header h1 {
-  font-size: 2.5rem;
-  color: var(--primary-color);
-  margin-bottom: 0.5rem;
-}
-
-.contact-header p {
-  color: var(--text-light);
-  font-size: 1.1rem;
-}
-
-.contact-content {
   display: flex;
-  flex-wrap: wrap;
   justify-content: center;
-  gap: 2rem;
-  max-width: 1100px;
-  margin: 0 auto;
+  align-items: center;
+  background: radial-gradient(circle at center, #e8f5e9, #c8e6c9); /* Soft Green Vignette */
+  padding: 20px;
+  overflow: hidden;
+  perspective: 1000px; /* Essential for 3D context */
 }
 
-/* Info Section Styling */
+/* --- The 3D Card Wrapper --- */
+.contact-card-3d {
+  position: relative;
+  width: 100%;
+  max-width: 1000px;
+  min-height: 550px;
+  background: white;
+  display: flex;
+  box-shadow: 0 30px 60px rgba(0,0,0,0.2), 0 0 40px rgba(76, 175, 80, 0.1);
+  border-radius: 20px;
+  /* This enables the 3D depth for children */
+  transform-style: preserve-3d;
+  transition: transform 0.1s ease-out; /* Smooth movement tracking */
+}
+
+/* --- Left Side: Info --- */
 .contact-info {
   flex: 1;
-  min-width: 300px;
-  padding: 2rem;
-  background: var(--primary-color);
-  color: var(--white);
-  border-radius: 12px;
-  box-shadow: 0 10px 30px rgba(46, 125, 50, 0.2);
+  background: linear-gradient(135deg, #2e7d32, #1b5e20);
+  color: white;
+  padding: 40px;
+  border-radius: 20px 0 0 20px;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  /* Push this layer slightly forward */
+  transform: translateZ(20px); 
+}
+
+/* Floating Content on the Left */
+.info-content-3d {
+  position: relative;
+  z-index: 2;
+  /* Push text even further forward for parallax */
+  transform: translateZ(30px); 
 }
 
 .contact-info h2 {
-  margin-bottom: 1rem;
-  font-size: 1.8rem;
-}
-
-.contact-info p {
-  margin-bottom: 2rem;
-  opacity: 0.9;
+  font-size: 2.5rem;
+  margin-bottom: 20px;
+  text-shadow: 2px 2px 10px rgba(0,0,0,0.2);
 }
 
 .info-item {
   display: flex;
   align-items: center;
-  margin-bottom: 1.5rem;
+  margin-bottom: 25px;
   font-size: 1.1rem;
 }
 
 .info-item .icon {
   margin-right: 15px;
-  font-size: 1.3rem;
+  font-size: 1.4rem;
+  color: #a5f3a8;
 }
 
-.social-media {
-  margin-top: 3rem;
+/* Decorative Circles (Background Shapes) */
+.circle-1, .circle-2 {
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.1);
+  z-index: 1;
 }
 
+.circle-1 {
+  width: 200px;
+  height: 200px;
+  top: -50px;
+  right: -50px;
+}
+
+.circle-2 {
+  width: 150px;
+  height: 150px;
+  bottom: -40px;
+  left: -40px;
+}
+
+/* Social Media */
 .social-icons {
   display: flex;
   gap: 15px;
-  margin-top: 10px;
+  margin-top: 15px;
 }
 
 .social-icons a {
-  color: var(--white);
+  color: white;
   font-size: 1.5rem;
-  transition: transform 0.3s ease;
+  transition: transform 0.3s;
 }
 
 .social-icons a:hover {
-  transform: translateY(-3px);
+  transform: scale(1.2) translateZ(10px); /* Icons pop out on hover */
+  color: #a5f3a8;
 }
 
-/* Form Section Styling */
+/* --- Right Side: Form --- */
 .contact-form-wrapper {
   flex: 1.5;
-  min-width: 300px;
-  background: var(--white);
-  padding: 2.5rem;
-  border-radius: 12px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  padding: 40px;
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 0 20px 20px 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  /* Push form slightly backward for depth contrast */
+  transform: translateZ(0px); 
 }
 
-.form-group {
-  margin-bottom: 1.5rem;
+.form-title {
+  color: #2e7d32;
+  font-size: 2rem;
+  margin-bottom: 30px;
+  transform: translateZ(20px);
 }
 
-.form-group label {
-  display: block;
-  margin-bottom: 0.5rem;
-  font-weight: 600;
-  color: var(--text-dark);
-}
-
-.form-group input,
-.form-group select,
-.form-group textarea {
+/* Animated Input Boxes */
+.input-box {
+  position: relative;
   width: 100%;
-  padding: 12px;
-  border: 1px solid #ddd;
-  border-radius: 6px;
+  margin-bottom: 35px;
+  transform: translateZ(20px);
+}
+
+.input-box input,
+.input-box textarea,
+.input-box select {
+  width: 100%;
+  padding: 10px 0;
   font-size: 1rem;
-  transition: border-color 0.3s;
-}
-
-.form-group input:focus,
-.form-group select:focus,
-.form-group textarea:focus {
-  outline: none;
-  border-color: var(--primary-color);
-}
-
-.submit-btn {
-  width: 100%;
-  padding: 14px;
-  background-color: var(--primary-color);
-  color: var(--white);
+  color: #333;
   border: none;
-  border-radius: 6px;
-  font-size: 1.1rem;
+  border-bottom: 2px solid #ccc;
+  outline: none;
+  background: transparent;
+  transition: 0.3s;
+}
+
+.input-box span {
+  position: absolute;
+  left: 0;
+  padding: 10px 0;
+  font-size: 1rem;
+  color: #666;
+  pointer-events: none;
+  transition: 0.3s;
+}
+
+/* Floating Label Logic */
+.input-box input:valid ~ span,
+.input-box input:focus ~ span,
+.input-box textarea:valid ~ span,
+.input-box textarea:focus ~ span {
+  color: #2e7d32;
+  transform: translateY(-20px);
+  font-size: 0.8rem;
   font-weight: bold;
+}
+
+.input-box input:focus,
+.input-box textarea:focus,
+.input-box select:focus {
+  border-bottom: 2px solid #2e7d32;
+}
+
+/* 3D Button */
+.submit-btn-3d {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 15px 30px;
+  background: #2e7d32;
+  color: white;
+  border: none;
+  border-radius: 50px;
+  font-size: 1.1rem;
   cursor: pointer;
-  transition: background-color 0.3s ease;
+  transform: translateZ(30px); /* Button floats high */
+  transition: all 0.3s ease;
+  box-shadow: 0 10px 20px rgba(46, 125, 50, 0.3);
 }
 
-.submit-btn:hover {
-  background-color: var(--secondary-color);
+.submit-btn-3d:hover {
+  background: #1b5e20;
+  transform: translateZ(40px) scale(1.05); /* Moves closer to user on hover */
+  box-shadow: 0 15px 30px rgba(46, 125, 50, 0.4);
 }
 
-/* Responsive Design */
-@media (max-width: 768px) {
-  .contact-content {
+/* Responsive */
+@media (max-width: 800px) {
+  .contact-card-3d {
     flex-direction: column;
+    max-width: 500px;
+    height: auto;
+    /* Disable 3D tilt on mobile as it can be annoying with touch */
+    transform: none !important; 
+  }
+  
+  .contact-info {
+    border-radius: 20px 20px 0 0;
+    padding: 30px;
+  }
+  
+  .contact-form-wrapper {
+    border-radius: 0 0 20px 20px;
+    padding: 30px;
   }
 }

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import './Contact.css';
-import { FaPhoneAlt, FaEnvelope, FaMapMarkerAlt, FaTwitter, FaInstagram, FaLinkedin } from 'react-icons/fa'; // Requires: npm install react-icons
+import { FaPhoneAlt, FaEnvelope, FaMapMarkerAlt, FaTwitter, FaInstagram, FaLinkedin, FaPaperPlane } from 'react-icons/fa';
 
 const Contact = () => {
   const [formData, setFormData] = useState({
@@ -10,107 +10,121 @@ const Contact = () => {
     message: ''
   });
 
+  // State for 3D Tilt Effect
+  const [tilt, setTilt] = useState({ x: 0, y: 0 });
+
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // TODO: Connect this to your backend (Node/Express)
     console.log('Form Submitted:', formData);
-    alert("Thank you for reaching out! We will get back to you shortly.");
+    alert("Message Sent! We'll be in touch.");
+  };
+
+  // 3D Tilt Logic
+  const handleMouseMove = (e) => {
+    const { offsetWidth: width, offsetHeight: height } = e.currentTarget;
+    const { nativeEvent: { offsetX, offsetY } } = e;
+
+    // Calculate rotation between -15 and 15 degrees
+    const rotateX = ((offsetY / height) - 0.5) * -20; 
+    const rotateY = ((offsetX / width) - 0.5) * 20;
+
+    setTilt({ x: rotateX, y: rotateY });
+  };
+
+  const handleMouseLeave = () => {
+    setTilt({ x: 0, y: 0 }); // Reset position when mouse leaves
   };
 
   return (
     <div className="contact-container">
-      {/* Header Section */}
-      <div className="contact-header">
-        <h1>Get in Touch</h1>
-        <p>Have questions about rescuing food, partnering with us, or volunteering? We're here to help.</p>
-      </div>
-
-      <div className="contact-content">
-        {/* Left Side: Contact Info */}
+      {/* 3D Wrapper */}
+      <div 
+        className="contact-card-3d"
+        onMouseMove={handleMouseMove}
+        onMouseLeave={handleMouseLeave}
+        style={{
+          transform: `perspective(1000px) rotateX(${tilt.x}deg) rotateY(${tilt.y}deg)`
+        }}
+      >
+        
+        {/* Left Side: Info (Floating Layer 1) */}
         <div className="contact-info">
-          <h2>Contact Information</h2>
-          <p>Fill out the form or contact us directly via these channels.</p>
-          
-          <div className="info-item">
-            <FaPhoneAlt className="icon" />
-            <span>+91 98765 43210</span>
-          </div>
-          <div className="info-item">
-            <FaEnvelope className="icon" />
-            <span>support@resqplate.com</span>
-          </div>
-          <div className="info-item">
-            <FaMapMarkerAlt className="icon" />
-            <span>123 Green Street, Tech City, India</span>
-          </div>
+          <div className="info-content-3d">
+            <h2>Let's Talk</h2>
+            <p>We'd love to hear about your food rescue journey.</p>
+            
+            <div className="info-item">
+              <FaPhoneAlt className="icon" />
+              <span>+91 98765 43210</span>
+            </div>
+            <div className="info-item">
+              <FaEnvelope className="icon" />
+              <span>support@resqplate.com</span>
+            </div>
+            <div className="info-item">
+              <FaMapMarkerAlt className="icon" />
+              <span>123 Tech City, India</span>
+            </div>
 
-          <div className="social-media">
-            <h3>Follow Our Journey</h3>
-            <div className="social-icons">
-              <a href="#"><FaTwitter /></a>
-              <a href="#"><FaInstagram /></a>
-              <a href="#"><FaLinkedin /></a>
+            <div className="social-media">
+              <p>Connect with us:</p>
+              <div className="social-icons">
+                <a href="#"><FaTwitter /></a>
+                <a href="#"><FaInstagram /></a>
+                <a href="#"><FaLinkedin /></a>
+              </div>
             </div>
           </div>
+          
+          {/* Decorative Circle for visual depth */}
+          <div className="circle-1"></div>
+          <div className="circle-2"></div>
         </div>
 
-        {/* Right Side: The Form */}
+        {/* Right Side: Form (Floating Layer 2) */}
         <div className="contact-form-wrapper">
           <form onSubmit={handleSubmit}>
-            <div className="form-group">
-              <label htmlFor="name">Full Name</label>
+            <h3 className="form-title">Send a Message</h3>
+            
+            <div className="input-box">
               <input 
-                type="text" 
-                name="name" 
-                id="name" 
-                placeholder="John Doe" 
-                value={formData.name} 
-                onChange={handleChange} 
-                required 
+                type="text" name="name" required="required"
+                value={formData.name} onChange={handleChange} 
               />
+              <span>Full Name</span>
             </div>
 
-            <div className="form-group">
-              <label htmlFor="email">Email Address</label>
+            <div className="input-box">
               <input 
-                type="email" 
-                name="email" 
-                id="email" 
-                placeholder="john@example.com" 
-                value={formData.email} 
-                onChange={handleChange} 
-                required 
+                type="email" name="email" required="required"
+                value={formData.email} onChange={handleChange} 
               />
+              <span>Email Address</span>
             </div>
 
-            <div className="form-group">
-              <label htmlFor="subject">I am interested in...</label>
-              <select name="subject" id="subject" value={formData.subject} onChange={handleChange}>
+            <div className="input-box">
+              <select name="subject" value={formData.subject} onChange={handleChange}>
                 <option value="General Inquiry">General Inquiry</option>
-                <option value="Partnering (Restaurant/NGO)">Partnering (Restaurant/NGO)</option>
+                <option value="Partnering">Partnering</option>
                 <option value="Volunteering">Volunteering</option>
-                <option value="Report a Bug">Report a Bug</option>
               </select>
             </div>
 
-            <div className="form-group">
-              <label htmlFor="message">Message</label>
+            <div className="input-box">
               <textarea 
-                name="message" 
-                id="message" 
-                rows="5" 
-                placeholder="How can we help you today?" 
-                value={formData.message} 
-                onChange={handleChange} 
-                required 
+                name="message" required="required"
+                value={formData.message} onChange={handleChange} 
               ></textarea>
+              <span>Type your message...</span>
             </div>
 
-            <button type="submit" className="submit-btn">Send Message</button>
+            <button type="submit" className="submit-btn-3d">
+              <span>Send Message</span> <FaPaperPlane />
+            </button>
           </form>
         </div>
       </div>
