@@ -4,7 +4,7 @@ import Navbar from "./components/NavBar.jsx";
 import Login from "./components/Login.jsx";
 import Signup from "./components/Signup.jsx";
 import Contact from "./components/Contact/Contact.jsx"; 
-import About from "./components/About/About.jsx";
+import About from "./components/About.jsx";
 
 function App() {
   return (
