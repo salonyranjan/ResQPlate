@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 const jwt = require("jsonwebtoken");
 const { body, validationResult } = require("express-validator");
-const User = require('../models/user');
+const User = require("../models/user");
 const { protect } = require("../middleware/auth");
 
 const signToken = (id) =>
@@ -22,9 +22,19 @@ router.post(
       .isIn(["donor", "ngo"])
       .withMessage("Role must be donor or ngo"),
     body("phone").notEmpty().withMessage("Phone required"),
+    body("location.type")
+      .optional()
+      .equals("Point")
+      .withMessage("Location type must be Point"),
     body("location.coordinates")
       .isArray({ min: 2, max: 2 })
       .withMessage("Coordinates [lng, lat] required"),
+    body("location.coordinates.0")
+      .isFloat()
+      .withMessage("Longitude must be a number"),
+    body("location.coordinates.1")
+      .isFloat()
+      .withMessage("Latitude must be a number"),
   ],
   async (req, res) => {
     const errors = validationResult(req);
@@ -46,7 +56,11 @@ router.post(
         password,
         role,
         phone,
-        location,
+        location: {
+          type: location?.type || "Point",
+          coordinates: location?.coordinates || [0, 0],
+          address: location?.address || "",
+        },
       });
       const token = signToken(user._id);
 
@@ -59,9 +73,11 @@ router.post(
           email: user.email,
           role: user.role,
           isVerified: user.isVerified,
+          location: user.location,
         },
       });
     } catch (err) {
+      console.error("Registration error:", err);
       res.status(500).json({ success: false, message: err.message });
     }
   },
@@ -95,6 +111,7 @@ router.post(
           email: user.email,
           role: user.role,
           isVerified: user.isVerified,
+          location: user.location,
         },
       });
     } catch (err) {
