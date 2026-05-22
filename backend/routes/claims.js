@@ -19,12 +19,10 @@ router.post("/", protect, authorize("ngo", "admin"), async (req, res) => {
         .status(404)
         .json({ success: false, message: "Donation not found" });
     if (donation.status !== "available") {
-      return res
-        .status(400)
-        .json({
-          success: false,
-          message: `Donation is already ${donation.status}`,
-        });
+      return res.status(400).json({
+        success: false,
+        message: `Donation is already ${donation.status}`,
+      });
     }
 
     // Prevent duplicate claims from same user
@@ -34,12 +32,10 @@ router.post("/", protect, authorize("ngo", "admin"), async (req, res) => {
       status: { $in: ["pending", "accepted"] },
     });
     if (existing)
-      return res
-        .status(400)
-        .json({
-          success: false,
-          message: "You have already claimed this donation",
-        });
+      return res.status(400).json({
+        success: false,
+        message: "You have already claimed this donation",
+      });
 
     // Calculate distance at time of claim
     const [dLng, dLat] = donation.location.coordinates;
@@ -68,6 +64,7 @@ router.post("/", protect, authorize("ngo", "admin"), async (req, res) => {
 // @route  PUT /api/claims/:id/accept
 // @desc   Donor accepts the claim
 // @access Private (donor)
+// PUT /api/claims/:id/accept
 router.put(
   "/:id/accept",
   protect,
@@ -75,23 +72,21 @@ router.put(
   async (req, res) => {
     try {
       const claim = await Claim.findById(req.params.id).populate("donation_id");
-      if (!claim)
-        return res
-          .status(404)
-          .json({ success: false, message: "Claim not found" });
-
+      // Ensure the donor approving is the owner of the donation
       if (claim.donation_id.donor_id.toString() !== req.user._id.toString()) {
         return res
           .status(403)
-          .json({
-            success: false,
-            message: "Not authorized — not your donation",
-          });
+          .json({ success: false, message: "Not your donation" });
       }
 
       claim.status = "accepted";
       claim.acceptedAt = new Date();
       await claim.save();
+
+      // Lock the donation so no one else can claim it
+      await Donation.findByIdAndUpdate(claim.donation_id, {
+        status: "claimed",
+      });
 
       res.json({ success: true, data: claim });
     } catch (err) {

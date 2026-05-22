@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
-const Donation = require('../models/donation');
-const User = require('../models/user');
+const Donation = require("../models/donation");
+const User = require("../models/user");
 const { protect, authorize } = require("../middleware/auth");
 const { modFireflyAlgorithm } = require("../utils/algorithms");
 
@@ -31,6 +31,20 @@ router.get("/", protect, async (req, res) => {
       .populate("donor_id", "name phone location")
       .limit(50);
 
+    res.json({ success: true, count: donations.length, data: donations });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+});
+
+// @route  GET /api/donations/my
+// @desc   Get logged-in donor's donations
+// @access Private (donor)
+router.get("/my", protect, authorize("donor", "admin"), async (req, res) => {
+  try {
+    const donations = await Donation.find({ donor_id: req.user._id })
+      .populate("claimed_by", "name phone")
+      .sort("-createdAt");
     res.json({ success: true, count: donations.length, data: donations });
   } catch (err) {
     res.status(500).json({ success: false, message: err.message });
@@ -67,6 +81,19 @@ router.post("/", protect, authorize("donor", "admin"), async (req, res) => {
       notes,
     } = req.body;
 
+    // --- SAFETY CHECK ---
+    if (
+      !location ||
+      !location.coordinates ||
+      location.coordinates.length !== 2
+    ) {
+      return res.status(400).json({
+        success: false,
+        message: "Valid location coordinates are required.",
+      });
+    }
+    // -----------------------------
+
     const donation = await Donation.create({
       donor_id: req.user._id,
       food_title,
@@ -95,7 +122,6 @@ router.post("/", protect, authorize("donor", "admin"), async (req, res) => {
       notificationTargets = modFireflyAlgorithm(donation, nearbyVolunteers, {
         topK: 3,
       });
-      // In production: send push notifications / emails to notificationTargets
       console.log(
         "[mod-FA] Notification targets:",
         notificationTargets.map((v) => v.name),
@@ -129,12 +155,10 @@ router.put("/:id", protect, async (req, res) => {
         .json({ success: false, message: "Not authorized" });
     }
     if (donation.status !== "available") {
-      return res
-        .status(400)
-        .json({
-          success: false,
-          message: "Cannot edit a claimed or expired donation",
-        });
+      return res.status(400).json({
+        success: false,
+        message: "Cannot edit a claimed or expired donation",
+      });
     }
 
     const allowed = [
