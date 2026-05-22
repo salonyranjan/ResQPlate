@@ -42,7 +42,7 @@ cron.schedule("*/5 * * * *", async () => {
   const Donation = require("./models/donation");
   const result = await Donation.updateMany(
     { status: "available", expiry_datetime: { $lt: new Date() } },
-    { $set: { status: "expired" } },
+    { $set: { status: "expired", expiredAt: new Date() } }, // Track exactly when it expired
   );
   if (result.modifiedCount > 0) {
     console.log(`[CRON] Auto-expired ${result.modifiedCount} donation(s)`);
