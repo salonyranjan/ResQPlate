@@ -1,7 +1,59 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import api from "../utils/api";
 import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
+import {
+  MapContainer,
+  TileLayer,
+  Marker,
+  useMapEvents,
+  useMap,
+} from "react-leaflet";
+import "leaflet/dist/leaflet.css";
+import L from "leaflet";
+
+import markerIcon2x from "leaflet/dist/images/marker-icon-2x.png";
+import markerIcon from "leaflet/dist/images/marker-icon.png";
+import markerShadow from "leaflet/dist/images/marker-shadow.png";
+delete L.Icon.Default.prototype._getIconUrl;
+L.Icon.Default.mergeOptions({
+  iconRetinaUrl: markerIcon2x,
+  iconUrl: markerIcon,
+  shadowUrl: markerShadow,
+});
+
+// Component to handle map clicks and reverse geocoding
+function LocationPicker({ position, setPosition, setAddress }) {
+  const map = useMap();
+
+  useMapEvents({
+    click(e) {
+      setPosition(e.latlng);
+      map.flyTo(e.latlng, map.getZoom());
+
+      // Reverse Geocoding (Convert Lat/Lng to Street Address)
+      fetch(
+        `https://nominatim.openstreetmap.org/reverse?format=json&lat=${e.latlng.lat}&lon=${e.latlng.lng}`,
+      )
+        .then((res) => res.json())
+        .then((data) => {
+          if (data && data.display_name) {
+            setAddress(data.display_name);
+          }
+        })
+        .catch((err) => console.error("Geocoding failed", err));
+    },
+  });
+
+  // Automatically fly to user's position when it updates externally (via GPS button)
+  useEffect(() => {
+    if (position) {
+      map.flyTo(position, 15, { animate: true });
+    }
+  }, [position, map]);
+
+  return position === null ? null : <Marker position={position}></Marker>;
+}
 
 export default function DonatePage() {
   const { user } = useAuth();
@@ -15,7 +67,15 @@ export default function DonatePage() {
     notes: "",
     address: "",
   });
-  const [customCoords, setCustomCoords] = useState(null);
+
+  // Set default map center (User's saved location or Kolkata)
+  const defaultLat = user?.location?.coordinates?.[1] || 22.581373;
+  const defaultLng = user?.location?.coordinates?.[0] || 88.349279;
+  const [position, setPosition] = useState({
+    lat: defaultLat,
+    lng: defaultLng,
+  });
+
   const [isLocating, setIsLocating] = useState(false);
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState(null);
@@ -24,22 +84,31 @@ export default function DonatePage() {
   const handleChange = (e) =>
     setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
 
+  // HTML5 Geolocation
   const handleGetLocation = () => {
     if (!navigator.geolocation) {
       setError("Geolocation is not supported by your browser.");
       return;
     }
-
     setIsLocating(true);
     navigator.geolocation.getCurrentPosition(
-      (position) => {
-        const { latitude, longitude } = position.coords;
-        setCustomCoords([longitude, latitude]); // MongoDB uses [lng, lat]
-        setForm((prev) => ({ ...prev, address: "Current GPS Location" }));
+      (pos) => {
+        const newPos = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+        setPosition(newPos);
+
+        // Reverse geocode the GPS location
+        fetch(
+          `https://nominatim.openstreetmap.org/reverse?format=json&lat=${newPos.lat}&lon=${newPos.lng}`,
+        )
+          .then((res) => res.json())
+          .then((data) => {
+            if (data && data.display_name)
+              setForm((prev) => ({ ...prev, address: data.display_name }));
+          });
+
         setIsLocating(false);
       },
       (err) => {
-        console.error(err);
         setError(
           "Failed to fetch location. Please check your browser permissions.",
         );
@@ -55,16 +124,10 @@ export default function DonatePage() {
     setError("");
     setResult(null);
     try {
-      const defaultCoords =
-        user?.location?.coordinates?.length === 2
-          ? user.location.coordinates
-          : [88.3639, 22.5726];
-      const finalCoords = customCoords || defaultCoords;
-
       const location = {
         type: "Point",
-        coordinates: finalCoords,
-        address: form.address || user?.location?.address || "Donor Address",
+        coordinates: [position.lng, position.lat], // MongoDB requires [lng, lat]
+        address: form.address || "User specified location",
       };
 
       const res = await api.post("/donations", { ...form, location });
@@ -77,7 +140,6 @@ export default function DonatePage() {
         notes: "",
         address: "",
       });
-      setCustomCoords(null);
     } catch (err) {
       setError(err.response?.data?.message || "Failed to post donation.");
     } finally {
@@ -164,11 +226,12 @@ export default function DonatePage() {
               </p>
             </div>
 
-            {/* LOCATION SECTION WITH COORDINATE DISPLAY */}
+            {/* ================= LOCATION PICKER ================= */}
             <div className="bg-gray-50 p-4 rounded-xl border border-gray-200">
-              <div className="flex justify-between items-end mb-2">
+              <div className="flex justify-between items-end mb-3">
                 <label className={labelClasses}>
-                  Pickup Location <span className="text-red-500">*</span>
+                  Pinpoint Pickup Location{" "}
+                  <span className="text-red-500">*</span>
                 </label>
                 <button
                   type="button"
@@ -176,33 +239,41 @@ export default function DonatePage() {
                   disabled={isLocating}
                   className="text-xs font-bold text-emerald-600 hover:text-emerald-700 bg-emerald-100/50 px-3 py-1.5 rounded-md border border-emerald-200 transition-colors flex items-center gap-1"
                 >
-                  {isLocating ? "Locating..." : "📍 Use Current GPS"}
+                  {isLocating ? "Locating..." : "🎯 Get Current GPS"}
                 </button>
               </div>
+
+              <div className="h-[250px] w-full rounded-xl overflow-hidden border border-gray-300 mb-3 relative z-0">
+                <MapContainer
+                  center={position}
+                  zoom={13}
+                  className="h-full w-full"
+                >
+                  <TileLayer url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png" />
+                  <LocationPicker
+                    position={position}
+                    setPosition={setPosition}
+                    setAddress={(addr) =>
+                      setForm((prev) => ({ ...prev, address: addr }))
+                    }
+                  />
+                </MapContainer>
+              </div>
+
+              <p className="text-xs font-medium text-emerald-600 mb-2">
+                Click anywhere on the map to adjust the pin.
+              </p>
+
               <input
                 name="address"
                 value={form.address}
                 onChange={handleChange}
-                placeholder={
-                  user?.location?.address ||
-                  "Enter specific address or landmark"
-                }
+                placeholder="Full Street Address"
                 required
                 className="block w-full rounded-md border-gray-300 shadow-sm focus:border-emerald-500 focus:ring-emerald-500 sm:text-sm p-3 border bg-white transition-colors"
               />
-
-              {/* Added explicit coordinate display */}
-              {customCoords && (
-                <div className="mt-3 flex items-center gap-2 text-xs font-medium text-emerald-700 bg-emerald-50 p-2 rounded-lg border border-emerald-100">
-                  <span className="text-emerald-500">✓</span>
-                  <span>GPS Coordinates Captured:</span>
-                  <span className="font-mono bg-white px-2 py-0.5 rounded shadow-sm border border-emerald-100">
-                    Lat: {customCoords[1].toFixed(5)}, Lng:{" "}
-                    {customCoords[0].toFixed(5)}
-                  </span>
-                </div>
-              )}
             </div>
+            {/* ============================================================== */}
 
             <div>
               <label className={labelClasses}>Additional Instructions</label>
@@ -242,16 +313,36 @@ export default function DonatePage() {
                 <h3 className="text-lg font-bold text-emerald-900 mb-2">
                   Donation Published Successfully!
                 </h3>
-                <p className="text-sm text-emerald-700 mb-4">
+                <p className="text-sm text-emerald-700 mb-6">
                   Nearby volunteers have been prioritized and notified.
                 </p>
-                <button
-                  type="button"
-                  onClick={() => navigate("/dashboard")}
-                  className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-emerald-600 hover:bg-emerald-700"
-                >
-                  Return to Dashboard
-                </button>
+
+                <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+                  <button
+                    type="button"
+                    onClick={() => navigate("/dashboard")}
+                    className="inline-flex items-center justify-center px-6 py-2.5 border border-transparent text-sm font-bold rounded-lg shadow-sm text-white bg-emerald-600 hover:bg-emerald-700 w-full sm:w-auto"
+                  >
+                    Return to Dashboard
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setResult(null);
+                      setForm({
+                        food_title: "",
+                        quantity: "",
+                        food_type: "vegetarian",
+                        expiry_datetime: "",
+                        notes: "",
+                        address: form.address,
+                      });
+                    }}
+                    className="inline-flex items-center justify-center px-6 py-2.5 border-2 border-emerald-600 text-sm font-bold rounded-lg text-emerald-700 bg-white hover:bg-emerald-50 w-full sm:w-auto"
+                  >
+                    Donate Another Item
+                  </button>
+                </div>
               </div>
             ) : (
               <div className="pt-2">
