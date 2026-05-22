@@ -51,7 +51,7 @@ function AppRoutes() {
           <Route path="/dashboard" element={<PrivateRoute><DashboardPage /></PrivateRoute>} />
           <Route path="/find-food" element={<PrivateRoute><FindFoodPage /></PrivateRoute>} />
           <Route path="/donate" element={<PrivateRoute roles={["donor", "admin"]}><DonatePage /></PrivateRoute>} />
-          <Route path="/my-claims" element={<PrivateRoute roles={["ngo", "admin"]}><MyClaimsPage /></PrivateRoute>} />
+          <Route path="/my-claims" element={<PrivateRoute roles={["ngo", "donor", "admin"]}><MyClaimsPage /></PrivateRoute>} />
           <Route path="/admin" element={<PrivateRoute roles={["admin"]}><AdminPage /></PrivateRoute>} />
           
           <Route path="*" element={<Navigate to={user ? "/dashboard" : "/"} replace />} />

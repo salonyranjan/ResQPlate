@@ -14,10 +14,14 @@ export default function Navbar() {
 
   const getRoleStyle = (role) => {
     switch (role) {
-      case "admin": return "bg-red-100 text-red-800 border-red-200";
-      case "ngo": return "bg-blue-100 text-blue-800 border-blue-200";
-      case "donor": return "bg-amber-100 text-amber-800 border-amber-200";
-      default: return "bg-gray-100 text-gray-800 border-gray-200";
+      case "admin":
+        return "bg-red-100 text-red-800 border-red-200";
+      case "ngo":
+        return "bg-blue-100 text-blue-800 border-blue-200";
+      case "donor":
+        return "bg-amber-100 text-amber-800 border-amber-200";
+      default:
+        return "bg-gray-100 text-gray-800 border-gray-200";
     }
   };
 
@@ -32,7 +36,6 @@ export default function Navbar() {
     <nav className="bg-white border-b border-gray-200 sticky top-0 z-50 w-full">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16">
-          
           {/* LEFT SIDE: Logo & Links */}
           <div className="flex">
             <div className="flex-shrink-0 flex items-center pt-1">
@@ -43,23 +46,44 @@ export default function Navbar() {
               {/* If NOT logged in, show Public Links */}
               {!user ? (
                 <>
-                  <NavLink to="/" className={navLinkClass}>Home</NavLink>
-                  <NavLink to="/about" className={navLinkClass}>About Us</NavLink>
-                  <NavLink to="/contact" className={navLinkClass}>Contact</NavLink>
+                  <NavLink to="/" className={navLinkClass}>
+                    Home
+                  </NavLink>
+                  <NavLink to="/about" className={navLinkClass}>
+                    About Us
+                  </NavLink>
+                  <NavLink to="/contact" className={navLinkClass}>
+                    Contact
+                  </NavLink>
                 </>
               ) : (
                 /* If logged in, show App Links */
                 <>
-                  <NavLink to="/dashboard" className={navLinkClass}>Dashboard</NavLink>
-                  <NavLink to="/find-food" className={navLinkClass}>Find Food</NavLink>
+                  <NavLink to="/dashboard" className={navLinkClass}>
+                    Dashboard
+                  </NavLink>
+                  <NavLink to="/find-food" className={navLinkClass}>
+                    Find Food
+                  </NavLink>
                   {(user?.role === "donor" || user?.role === "admin") && (
-                    <NavLink to="/donate" className={navLinkClass}>Donate</NavLink>
+                    <NavLink to="/donate" className={navLinkClass}>
+                      Donate
+                    </NavLink>
+                  )}
+                  {user?.role === "donor" && (
+                    <NavLink to="/my-claims" className={navLinkClass}>
+                      Manage Donations
+                    </NavLink>
                   )}
                   {(user?.role === "ngo" || user?.role === "admin") && (
-                    <NavLink to="/my-claims" className={navLinkClass}>My Claims</NavLink>
+                    <NavLink to="/my-claims" className={navLinkClass}>
+                      My Claims
+                    </NavLink>
                   )}
                   {user?.role === "admin" && (
-                    <NavLink to="/admin" className={navLinkClass}>Admin</NavLink>
+                    <NavLink to="/admin" className={navLinkClass}>
+                      Admin
+                    </NavLink>
                   )}
                 </>
               )}
@@ -85,7 +109,9 @@ export default function Navbar() {
               </>
             ) : (
               <>
-                <span className={`px-2.5 py-1 text-xs font-bold uppercase rounded-md border ${getRoleStyle(user?.role)}`}>
+                <span
+                  className={`px-2.5 py-1 text-xs font-bold uppercase rounded-md border ${getRoleStyle(user?.role)}`}
+                >
                   {user?.role}
                 </span>
                 <span className="text-sm font-medium text-gray-700">
@@ -100,7 +126,6 @@ export default function Navbar() {
               </>
             )}
           </div>
-
         </div>
       </div>
     </nav>
