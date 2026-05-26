@@ -1,30 +1,72 @@
-import { BrowserRouter, Route, Routes } from "react-router-dom";
-import Landing from "./pages/Landing.jsx";
-import Navbar from "./components/NavBar.jsx";
-import Login from "./pages/Login.jsx";
-import Signup from "./pages/Signup.jsx";
-import Contact from "./pages/Contact.jsx";
-import About from "./pages/About.jsx";
-import { Toaster } from "react-hot-toast";
-import Dashboard from "./components/Dashboard/Dashboard.jsx";
+import React from "react";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { AuthProvider, useAuth } from "./context/AuthContext";
+import Navbar from "./components/Navbar";
+import HomePage from "./pages/HomePage";
+import AboutPage from "./pages/AboutPage";
+import ContactPage from "./pages/ContactPage";
+import LoginPage from "./pages/LoginPage";
+import RegisterPage from "./pages/RegisterPage";
+import DashboardPage from "./pages/DashboardPage";
+import FindFoodPage from "./pages/FindFoodPage";
+import DonatePage from "./pages/DonatePage";
+import MyClaimsPage from "./pages/MyClaimsPage";
+import AdminPage from "./pages/AdminPage";
 
-function App() {
+function PrivateRoute({ children, roles }) {
+  const { user, loading } = useAuth();
+  
+  if (loading) return (
+    <div className="min-h-screen flex items-center justify-center bg-gray-50 w-full">
+      <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-600"></div>
+    </div>
+  );
+  
+  if (!user) return <Navigate to="/login" replace />;
+  if (roles && !roles.includes(user.role)) return <Navigate to="/dashboard" replace />;
+  
+  return children;
+}
+
+function AppRoutes() {
+  const { user } = useAuth();
+
   return (
-    <BrowserRouter>
-      <Toaster position="top-right" reverseOrder={false} />
+    <div className="flex flex-col min-h-screen w-full bg-gray-50">
+      {/* Navbar is always visible now */}
       <Navbar />
-      <Routes>
-        <Route path="/" element={<Landing />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Signup />} />
-        <Route path="/contact" element={<Contact />} />
-        <Route path="/about" element={<About />} />
-        {/* by useParams */}
-        {/* <Route path="/dashboard/:role" element={<DonorDashboard />} />  */}
-        <Route path="/dashboard" element={<Dashboard />} />
-      </Routes>
-    </BrowserRouter>
+      
+      <main className="flex-grow w-full flex flex-col">
+        <Routes>
+          {/* Public Pages */}
+          <Route path="/" element={<HomePage />} />
+          <Route path="/about" element={<AboutPage />} />
+          <Route path="/contact" element={<ContactPage />} />
+
+          {/* Auth Pages */}
+          <Route path="/login" element={user ? <Navigate to="/dashboard" replace /> : <LoginPage />} />
+          <Route path="/register" element={user ? <Navigate to="/dashboard" replace /> : <RegisterPage />} />
+
+          {/* Private App Pages */}
+          <Route path="/dashboard" element={<PrivateRoute><DashboardPage /></PrivateRoute>} />
+          <Route path="/find-food" element={<PrivateRoute><FindFoodPage /></PrivateRoute>} />
+          <Route path="/donate" element={<PrivateRoute roles={["donor", "admin"]}><DonatePage /></PrivateRoute>} />
+          <Route path="/my-claims" element={<PrivateRoute roles={["ngo", "donor", "admin"]}><MyClaimsPage /></PrivateRoute>} />
+          <Route path="/admin" element={<PrivateRoute roles={["admin"]}><AdminPage /></PrivateRoute>} />
+          
+          <Route path="*" element={<Navigate to={user ? "/dashboard" : "/"} replace />} />
+        </Routes>
+      </main>
+    </div>
   );
 }
 
-export default App;
+export default function App() {
+  return (
+    <AuthProvider>
+      <BrowserRouter>
+        <AppRoutes />
+      </BrowserRouter>
+    </AuthProvider>
+  );
+}

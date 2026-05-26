@@ -1,40 +1,141 @@
-# ResQPlate: Food Waste Reduction & Donation Web App
+# ResQPlate
 
-> **Tech Stack:** MERN (MongoDB, Express, React, Node.js)
+ResQPlate is a production-grade, location-based food rescue platform designed to bridge the gap between food donors (restaurants, events, individuals) and registered NGOs/volunteers. By leveraging real-time geospatial tracking and smart routing algorithms, ResQPlate ensures surplus food reaches those in need before it expires.
 
-## Overview
-**ResQPlate** is a real-time web platform designed to bridge the gap between food donors (restaurants, messes, events) and receivers (NGOs, volunteers). By utilizing **Geo-spatial logic**, the app optimizes the logistics of food recovery, ensuring surplus food reaches the needy before it expires.
+---
 
 ## Key Features
-- **Real-time Geo-Matching:** Donors and NGOs are matched based on GPS location (Haversine Formula).
-- **Interactive Map:** View available food donations on a live map (Leaflet/Google Maps).
-- **Expiry Management:** Automated system to flag or remove expired food listings.
-- **Role-Based Access:** Separate dashboards for Donors, NGOs, and Admins.
-- **Analytics:** Admin dashboard to track total food saved and impact created.
+
+- **Role-Based Architecture:** Secure, distinct workflows for Donors, NGOs, and Admins.
+- **Interactive Live Map:** Powered by React-Leaflet and OpenStreetMap. Features draggable search pins, custom search radii, and one-click reverse geocoding for pinpoint accurate pickup locations.
+- **Smart Request & Approve Workflow:** NGOs request food claims, and Donors retain the power to approve or reject the pickup request, ensuring safety and control.
+- **O(log N) Geospatial Queries:** Utilizes MongoDB's `2dsphere` indexes to instantly find available food within a user's exact proximity.
+- **Algorithmic Volunteer Routing:** Uses a Modified Firefly Algorithm (mod-FA) to calculate and notify the most reliable and proximate volunteers when a new donation is posted.
+- **Automated Data Integrity:** A background Node-Cron job automatically scans and flags expired donations every 5 minutes to keep the live map accurate.
+- **Admin Control Center:** A comprehensive dashboard to monitor platform health, verify NGO accounts, and moderate global donations.
 
 ---
+
+## Data Flow Diagram
+
+```mermaid
+flowchart TD
+  %% External Entities
+  Donor([Donor])
+  NGO([NGO / Volunteer])
+  Admin([Admin])
+
+  %% Databases (Data Stores)
+  DB_User[(Users DB)]
+  DB_Donation[(Donations DB)]
+  DB_Claim[(Claims DB)]
+
+  %% Processes
+  Auth(1.0 Auth & Verification)
+  ManageDonation(2.0 Manage Donations)
+  MatchClaim(3.0 Food Matching & Claims)
+  Dashboard(4.0 Admin Dashboard)
+
+  %% Auth Flows
+  Donor & NGO -->|Register/Login Data| Auth
+  Auth <-->|Read/Write User| DB_User
+  Admin -->|Verify NGO Accounts| Auth
+
+  %% Donation Flows
+  Donor -->|Post Food Details & GPS| ManageDonation
+  ManageDonation <-->|Store/Update Status| DB_Donation
+
+  %% Claim & Matching Flows
+  NGO -->|Query Location/Radius| MatchClaim
+  MatchClaim <-->|Fetch Available Food| DB_Donation
+  NGO -->|Request to Claim Food| MatchClaim
+  MatchClaim -->|Create Pending Claim| DB_Claim
+  MatchClaim -->|Notify Incoming Request| Donor
+  Donor -->|Approve/Reject Claim| MatchClaim
+  MatchClaim -->|Update Claim Status| DB_Claim
+  MatchClaim -->|Reveal Pickup Address| NGO
+
+  %% Admin Flows
+  Admin -->|Request Platform Stats| Dashboard
+  Dashboard -->|Read Metrics| DB_User & DB_Donation & DB_Claim
+
+```
 
 ## Tech Stack
-| Component | Technology |
-| :--- | :--- |
-| **Frontend** | React.js, Tailwind CSS, Leaflet Maps |
-| **Backend** | Node.js, Express.js |
-| **Database** | MongoDB Atlas (Cloud) |
-| **Auth** | JSON Web Tokens (JWT) & Bcrypt |
-| **Tools** | Postman, VS Code, Git |
+
+### Frontend (Client)
+
+- **Framework:** React.js (Vite)
+- **Styling:** Tailwind CSS
+- **Mapping:** React-Leaflet, Leaflet.js
+- **Geocoding:** Nominatim (OpenStreetMap API)
+- **Routing:** React Router v6
+- **HTTP Client:** Axios (configured with cross-origin credentials)
+
+### Backend (Server)
+
+- **Environment:** Node.js, Express.js
+- **Database:** MongoDB Atlas (Mongoose ODM)
+- **Authentication:** JSON Web Tokens (JWT), bcrypt.js
+- **Task Scheduling:** node-cron
+- **Validation:** express-validator
 
 ---
 
-## Getting Started
+## Environment Variables
 
-### 1. Prerequisites
-Make sure you have the following installed on your machine:
-- [Node.js](https://nodejs.org/) (v16 or higher)
-- [MongoDB Atlas](https://www.mongodb.com/) Account (for database connection)
+To run this project locally or in production, you will need to add the following environment variables.
 
-### 2. Installation
+### Backend (`/backend/.env`)
 
-**Step 1: Clone the Repository**
+| Variable     | Description                    | Example                 |
+| ------------ | ------------------------------ | ----------------------- |
+| `PORT`       | The port your backend runs on  | `8080`                  |
+| `MONGO_URI`  | Your MongoDB connection string | `mongodb+srv://...`     |
+| `JWT_SECRET` | Secret key for signing tokens  | `your_super_secret_key` |
+| `JWT_EXPIRE` | Token expiration time          | `7d`                    |
+| `CLIENT_URL` | The URL of your frontend       | `http://localhost:5173` |
+
+### Frontend (`/frontend/.env`)
+
+| Variable           | Description                 | Example                     |
+| ------------------ | --------------------------- | --------------------------- |
+| `VITE_BACKEND_URL` | The URL of your backend API | `http://localhost:8080/api` |
+
+---
+
+## Local Installation & Setup
+
+**1. Clone the repository**
+
 ```bash
-git clone [https://github.com/your-username/ResQPlate.git](https://github.com/your-username/ResQPlate.git)
-cd ResQPlate
+git clone https://github.com/manish01101/resqplate.git
+
+```
+
+**2. Go inside the repository**
+
+```bash
+cd resqplate/
+
+```
+
+**3. Setup the Backend**
+
+```bash
+cd backend
+npm install
+# Create your .env file here
+npm run dev # npm run start
+
+```
+
+**4. Setup the Frontend**
+
+```bash
+cd ../frontend
+npm install
+# Create your .env file here
+npm run dev
+
+```

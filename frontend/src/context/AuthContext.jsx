@@ -1,71 +1,49 @@
-import { createContext, useState, useEffect, useContext } from "react";
-import axios from "axios";
+import React, { createContext, useContext, useState, useEffect } from "react";
+import api from "../utils/api";
 
-const AuthContext = createContext();
-const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
+const AuthContext = createContext(null);
 
-export const AuthProvider = ({ children }) => {
-  const [token, setToken] = useState(localStorage.getItem("token"));
-  const [userRole, setUserRole] = useState(localStorage.getItem("role") || "");
-  const [isAuthenticated, setIsAuthenticated] = useState(!!token);
-  const [loading, setLoading] = useState(false);
-
-  const loginUtils = (newToken, role) => {
-    localStorage.setItem("token", newToken);
-    localStorage.setItem("role", role);
-    setToken(newToken);
-    setUserRole(role);
-    setIsAuthenticated(true);
-  };
-
-  const logoutUtils = () => {
-    localStorage.clear();
-    setToken(null);
-    setUserRole("");
-    setIsAuthenticated(false);
-    window.location.href = "/login";
-  };
+export function AuthProvider({ children }) {
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (!token) return;
-    setLoading(true);
+    const token = localStorage.getItem("resqplate_token");
+    if (token) {
+      api
+        .get("/auth/me")
+        .then((res) => setUser(res.data.user))
+        .catch(() => localStorage.removeItem("resqplate_token"))
+        .finally(() => setLoading(false));
+    } else {
+      setLoading(false);
+    }
+  }, []);
 
-    const fetchUser = async () => {
-      try {
-        // "/me endpoint" => this check each time for valid user
-        const res = await axios.get(`${BACKEND_URL}/api/me`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        if (res.data) {
-          setUserRole(res.data.role);
-          localStorage.setItem("role", res.data.role);
-        }
-      } catch (err) {
-        if (err.response?.status === 401) logoutUtils();
-      } finally {
-        setLoading(false);
-      }
-    };
+  const login = async (email, password) => {
+    const res = await api.post("/auth/login", { email, password });
+    localStorage.setItem("resqplate_token", res.data.token);
+    setUser(res.data.user);
+    return res.data.user;
+  };
 
-    fetchUser();
-  }, [token]);
+  const register = async (data) => {
+    const res = await api.post("/auth/register", data);
+    localStorage.setItem("resqplate_token", res.data.token);
+    setUser(res.data.user);
+    return res.data.user;
+  };
+
+  const logout = () => {
+    localStorage.removeItem("resqplate_token");
+    setUser(null);
+  };
 
   return (
-    <AuthContext.Provider
-      value={{
-        token,
-        userRole,
-        isAuthenticated,
-        loginUtils,
-        logoutUtils,
-        loading,
-      }}
-    >
+    <AuthContext.Provider value={{ user, loading, login, register, logout }}>
       {children}
     </AuthContext.Provider>
   );
-};
+}
 
-// hooks for auth context
-// export const useAuth = function useContext(AuthContext) {};
 export const useAuth = () => useContext(AuthContext);
