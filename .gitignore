@@ -9,7 +9,7 @@ pnpm-debug.log*
 lerna-debug.log*
 .env
 .env.local
-seeds.js
+# seeds.js
 
 
 node_modules
