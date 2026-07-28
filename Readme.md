@@ -102,7 +102,7 @@ Every day, restaurants, hostels, and event halls throw away food that's still pe
 <img src="screenshots/05-live-food-map.png" alt="Live food map" width="85%" />
 
 **ResQBot — the AI food-rescue assistant**
-<img src="screenshots/reqbot.png" alt="ResQBot AI assistant" width="25%" />
+<img src="screenshots/resqbot.png" alt="ResQBot AI assistant" width="45%" />
 
 </div>
 
