@@ -90,7 +90,7 @@ Every day, restaurants, hostels, and event halls throw away food that's still pe
 <td width="50%">
 
 **Review & approve claim requests**
-<img src="screenshots/03-review-approve.png" alt="Review and approve claims" width="100%" />
+<img src="screenshots/manage.png" alt="Review and approve claims" width="100%" />
 
 </td>
 </tr>
