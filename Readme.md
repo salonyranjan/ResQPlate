@@ -70,7 +70,7 @@ Every day, restaurants, hostels, and event halls throw away food that's still pe
 <td width="50%">
 
 **Discover donations nearby**
-<img src="screenshots/5.jpeg" alt="Discover available donations" width="100%" />
+<img src="screenshots/05-live-food-map.png" alt="Discover available donations" width="100%" />
 
 </td>
 <td width="50%">
