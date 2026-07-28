@@ -1,6 +1,7 @@
 <div align="center">
 
 <img src="screenshots/hero.png" alt="ResQPlate — Fighting food waste, one meal at a time" width="100%" />
+<img src="screenshots/footer.png" alt="ResQPlate — Fighting food waste, one meal at a time" width="100%" />
 
 # 🍽️ ResQPlate
 
