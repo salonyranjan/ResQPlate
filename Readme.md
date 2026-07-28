@@ -84,7 +84,7 @@ Every day, restaurants, hostels, and event halls throw away food that's still pe
 <td width="50%">
 
 **Live GPS navigation & ETA**
-<img src="screenshots/06-live-tracking.png" alt="Live GPS tracking" width="100%" />
+<img src="screenshots/5.jpeg" alt="Live GPS tracking" width="100%" />
 
 </td>
 <td width="50%">
