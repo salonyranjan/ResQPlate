@@ -14,6 +14,9 @@
 [**🚀 Live App**](https://resqplate-tan.vercel.app) · [**📖 Documentation**](#-documentation) · [**🐛 Report a Bug**](../../issues) · [**✨ Request a Feature**](../../issues)
 
 </div>
+<div align="center">
+
+<img src="screenshots/file.jpeg" alt="ResQPlate — Fighting food waste, one meal at a time" width="50%" />
 
 ---
 
