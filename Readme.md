@@ -9,7 +9,6 @@
 
 [![Live Demo](https://img.shields.io/badge/Live%20Demo-resqplate--tan.vercel.app-10b981?style=for-the-badge&logo=vercel)](https://resqplate-tan.vercel.app)
 [![MERN Stack](https://img.shields.io/badge/Stack-MERN-47A248?style=for-the-badge&logo=mongodb)](#-tech-stack)
-[![License](https://img.shields.io/badge/License-MIT-blue?style=for-the-badge)](#-license)
 [![Made for SDG](https://img.shields.io/badge/SDG-2%20%C2%B7%2012%20%C2%B7%2013%20%C2%B7%2017-8B1E3F?style=for-the-badge)](#-social--environmental-impact)
 
 [**🚀 Live App**](https://resqplate-tan.vercel.app) · [**📖 Documentation**](#-documentation) · [**🐛 Report a Bug**](../../issues) · [**✨ Request a Feature**](../../issues)
