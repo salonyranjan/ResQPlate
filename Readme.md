@@ -340,7 +340,7 @@ Distributed under the MIT License. See `LICENSE` for details.
 
 ## 👥 Team
 
-Built by **Salony Ranjan**, Dipu Kumar, Sanjeev Kumar, Manish Kumar, and Amit Kumar Choudhary — Dept. of Computer Science & Business Systems, NSEC.
+Built by **Salony Ranjan**,  Manish Kumar — Dept. of Computer Science & Business Systems, NSEC.
 
 <div align="center">
 
