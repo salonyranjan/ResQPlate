@@ -319,7 +319,7 @@ Have an idea? [Open an issue](../../issues) — contributions and suggestions ar
 
 ## 📖 Documentation
 
-This project was built as a final-year B.Tech (CSBS) capstone at **Netaji Subhash Engineering College, Kolkata**, under the guidance of **Prof. Sourish Mullick**. The full engineering report — covering literature review, DFDs, ER diagrams, control-flow/state diagrams, SRS, security design, and benchmarked results — is available on request or in `/docs`.
+This project was built as a final-year B.Tech (CSBS) capstone at **Netaji Subhash Engineering College, Kolkata**, under the guidance of **Prof. Sourish Mullick**. The full engineering report — covering literature review, DFDs, ER diagrams, control-flow/state diagrams, SRS, security design, and benchmarked results — is available on request or in `https://drive.google.com/file/d/1WI46WO5v62MTfKLNhWCjnaBUl0pmw0KM/view?usp=sharing`.
 
 ---
 
