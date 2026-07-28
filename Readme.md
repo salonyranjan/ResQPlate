@@ -76,7 +76,7 @@ Every day, restaurants, hostels, and event halls throw away food that's still pe
 <td width="50%">
 
 **OTP-secured pickup**
-<img src="screenshots/04-secure-pickup-otp.png" alt="Secure OTP pickup" width="100%" />
+<img src="screenshots/otp.png" alt="Secure OTP pickup" width="100%" />
 
 </td>
 </tr>
