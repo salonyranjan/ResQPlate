@@ -54,59 +54,88 @@ Every day, restaurants, hostels, and event halls throw away food that's still pe
 
 ## 🖼️ Product Walkthrough
 
+<div align="center">
+
+*From sign-up to a completed pickup — every screen that gets a meal from surplus to someone who needs it.*
+
+</div>
+<br/>
+
+### 🪪 Trust & Onboarding
+
 <table>
 <tr>
-<td width="50%">
+<td width="50%" valign="top">
 
-**Identity verification (Aadhaar / Govt. ID)**
+**Identity verification**
+Donors and NGOs submit a Govt. ID; nothing goes live until an admin approves it.
+
 <img src="screenshots/08-verify-account.jpeg" alt="Verify your account" width="100%" />
 
 </td>
-<td width="50%">
+<td width="50%" valign="top">
 
-**Admin Control Panel**
+**Admin control panel**
+Live platform stats plus dedicated tabs for users, donations, and claims.
+
 <img src="screenshots/09-admin-panel.jpeg" alt="Admin control panel" width="100%" />
 
 </td>
 </tr>
+</table>
+
+### 🗺️ Discover & Claim
+
+<table>
 <tr>
-<td width="50%">
+<td width="50%" valign="top">
 
-**Discover donations nearby**
-<img src="screenshots/05-live-food-map.png" alt="Discover available donations" width="100%" />
+**Live, adjustable-radius food map**
+Haversine + `2dsphere` indexing surfaces the nearest available donations instantly.
 
-</td>
-<td width="50%">
-
-**OTP-secured pickup**
-<img src="screenshots/otp.png" alt="Secure OTP pickup" width="100%" />
+<img src="screenshots/05-live-food-map.png" alt="Discover available donations on the live map" width="100%" />
 
 </td>
-</tr>
-<tr>
-<td width="50%">
-
-**Live GPS navigation & ETA**
-<img src="screenshots/5.jpeg" alt="Live GPS tracking" width="100%" />
-
-</td>
-<td width="50%">
+<td width="50%" valign="top">
 
 **Review & approve claim requests**
+Donors see who wants to collect and approve the strongest match, ranked by mod-FA.
+
 <img src="screenshots/manage.png" alt="Review and approve claims" width="100%" />
 
 </td>
 </tr>
 </table>
 
+### 📍 Pickup & Handoff
+
+<table>
+<tr>
+<td width="50%" valign="top">
+
+**OTP-secured pickup**
+A one-time 4-digit PIN confirms the right volunteer collected the right donation.
+
+<img src="screenshots/otp.png" alt="Secure OTP pickup confirmation" width="100%" />
+
+</td>
+<td width="50%" valign="top">
+
+**Live GPS navigation & ETA**
+Socket.io streams real-time location so donors can track the volunteer's approach.
+
+<img src="screenshots/5.jpeg" alt="Live GPS tracking with ETA" width="100%" />
+
+</td>
+</tr>
+</table>
+
+### 🤖 ResQBot — the AI Food-Rescue Assistant
+
 <div align="center">
+<img src="screenshots/resqbot.png" alt="ResQBot AI assistant answering a platform question" width="50%" />
 
-**Live, adjustable-radius food map**
-<img src="screenshots/05-live-food-map.png" alt="Live food map" width="85%" />
-
-**ResQBot — the AI food-rescue assistant**
-<img src="screenshots/resqbot.png" alt="ResQBot AI assistant" width="45%" />
-
+<sub>Groq-powered and grounded in ResQPlate's real matching, expiry, and role logic — not a scripted FAQ bot.</sub>
 </div>
 
 ---
