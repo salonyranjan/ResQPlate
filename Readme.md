@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="screenshots/01-landing-hero.png" alt="ResQPlate — Fighting food waste, one meal at a time" width="100%" />
+<img src="screenshots/hero.png" alt="ResQPlate — Fighting food waste, one meal at a time" width="100%" />
 
 # 🍽️ ResQPlate
 
@@ -70,7 +70,7 @@ Every day, restaurants, hostels, and event halls throw away food that's still pe
 <td width="50%">
 
 **Discover donations nearby**
-<img src="screenshots/02-discover-donations.png" alt="Discover available donations" width="100%" />
+<img src="screenshots/5.jpeg" alt="Discover available donations" width="100%" />
 
 </td>
 <td width="50%">
@@ -102,7 +102,7 @@ Every day, restaurants, hostels, and event halls throw away food that's still pe
 <img src="screenshots/05-live-food-map.png" alt="Live food map" width="85%" />
 
 **ResQBot — the AI food-rescue assistant**
-<img src="screenshots/07-resqbot-assistant.png" alt="ResQBot AI assistant" width="45%" />
+<img src="screenshots/reqbot.png" alt="ResQBot AI assistant" width="25%" />
 
 </div>
 
