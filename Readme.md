@@ -15,8 +15,8 @@
 
 </div>
 <div align="center">
-
-<img src="screenshots/file.jpeg" alt="ResQPlate — Fighting food waste, one meal at a time" width="50%" />
+<img src="screenshots/file.jpeg" alt="ResQPlate — Fighting food waste, one meal at a time" width="70%" />
+</div>
 
 ---
 
